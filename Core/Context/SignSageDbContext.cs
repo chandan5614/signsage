@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SignSage.Core.Models;
 
-namespace AuthenticationService.Data
+namespace SignSage.Core.Context
 {
     public class SignSageDbContext : DbContext
     {
