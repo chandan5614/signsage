@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationService.Data
 {
-    public class SignSageDbContext: DbContext
+    public class SignSageDbContext : DbContext
     {
         public SignSageDbContext(DbContextOptions<SignSageDbContext> options)
             : base(options)
@@ -14,5 +14,12 @@ namespace AuthenticationService.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Template> Templates { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<Signature> Signatures { get; set; }
+        public DbSet<Renewal> Renewals { get; set; }
+        public DbSet<AuditTrail> AuditTrails { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
     }
 }
