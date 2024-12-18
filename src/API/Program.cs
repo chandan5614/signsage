@@ -22,14 +22,34 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
 builder.Services.AddScoped<IRepository<Core.Entities.Document>, Core.Data.Repositories.DocumentRepository>();
 builder.Services.AddScoped<IRepository<Core.Entities.User>, Core.Data.Repositories.UserRepository>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure Authentication and Authorization
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options => { /* JWT settings */ });
+// JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Set to true in production for security
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]))
+    };
+});
 
 // Configure logging
 builder.Services.AddLogging();
@@ -55,8 +75,8 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 // Enable HTTPS redirection
 app.UseHttpsRedirection();
 
-// Enable authorization
-app.UseAuthorization();
+app.UseAuthentication(); // Use Authentication
+app.UseAuthorization();  // Use Authorization
 
 // Map controllers
 app.MapControllers();

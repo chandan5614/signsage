@@ -11,10 +11,12 @@ namespace Auth.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly JwtTokenService _jwtTokenService;
 
-        public AuthController(UserService userService)
+        public AuthController(UserService userService, JwtTokenService jwtTokenService)
         {
             _userService = userService;
+            _jwtTokenService = jwtTokenService;
         }
 
         // POST: api/auth/register
@@ -28,7 +30,15 @@ namespace Auth.Controllers
 
             try
             {
-                var token = await _userService.RegisterUserAsync(model);
+                // Register the user
+                var user = await _userService.RegisterUserAsync(model);
+                if (user == null)
+                {
+                    return BadRequest("User registration failed.");
+                }
+
+                // Generate JWT token after successful registration
+                var token = _jwtTokenService.GenerateJwtToken(user);
                 return Ok(new { Token = token });
             }
             catch (Exception ex)
@@ -48,7 +58,15 @@ namespace Auth.Controllers
 
             try
             {
-                var token = await _userService.LoginUserAsync(model);
+                // Validate the user login
+                var user = await _userService.ValidateUserAsync(model);
+                if (user == null)
+                {
+                    return Unauthorized("Invalid credentials.");
+                }
+
+                // Generate JWT token after successful login
+                var token = _jwtTokenService.GenerateJwtToken(user);
                 return Ok(new { Token = token });
             }
             catch (Exception ex)
