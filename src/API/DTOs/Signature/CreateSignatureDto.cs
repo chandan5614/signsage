@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace API.DTOs.Signature
 {
     public class CreateSignatureDto
     {
-        
+        public int DocumentId { get; set; }
+        public int UserId { get; set; }
+        public DateTime SignedDate { get; set; }
     }
 }
